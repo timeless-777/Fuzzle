@@ -120,7 +120,7 @@ const InnerTab = ({ user, supabase }: { user: any; supabase: any }) => {
     }
   }, [castHashs, supabase]);
 
-  const updateCastPoint = async (hash: string, point: number) => {
+  const updateCastPoint = async (hash: string, point: number, currentPoint: number) => {
     const { data: fuzzle_point_data } = await supabase
       .from("fuzzle_point")
       .select("*")
@@ -137,13 +137,13 @@ const InnerTab = ({ user, supabase }: { user: any; supabase: any }) => {
         .select();
       const { data, error } = await supabase
         .from("fuzzle_cast")
-        .upsert({ hash, point })
+        .upsert({ hash, point: currentPoint + point })
         .select();
       if (error) {
         console.error(error);
       }
       if (data) {
-        setCastPoints({ ...castPoints, [hash]: point });
+        setCastPoints({ ...castPoints, [hash]: currentPoint + point });
       }
     }
   };
@@ -272,19 +272,19 @@ const InnerTab = ({ user, supabase }: { user: any; supabase: any }) => {
                       >
                         <button
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                          onClick={() => updateCastPoint(cast.hash, 100)}
+                          onClick={() => updateCastPoint(cast.hash, 100, castPoints[cast.hash] || 0)}
                         >
                           +100
                         </button>
                         <button
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                          onClick={() => updateCastPoint(cast.hash, 200)}
+                          onClick={() => updateCastPoint(cast.hash, 200, castPoints[cast.hash] || 0)}
                         >
                           +200
                         </button>
                         <button
                           className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                          onClick={() => updateCastPoint(cast.hash, 500)}
+                          onClick={() => updateCastPoint(cast.hash, 500, castPoints[cast.hash] || 0)}
                         >
                           +500
                         </button>
